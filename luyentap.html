@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    body{
+      position: relative;
+      bottom: 300px;
+      background: #F3C2FF;
+      background: -moz-linear-gradient(left, #F3C2FF 0%, #CBCBCB 57%, #2BB1FF 100%);
+      background: -webkit-linear-gradient(left, #F3C2FF 0%, #CBCBCB 57%, #2BB1FF 100%);
+      background: linear-gradient(to right, #F3C2FF 0%, #CBCBCB 57%, #2BB1FF 100%);
+    }
+    table {
+      border-collapse: collapse;
+      width: 80%;
+      margin: 5px 20px;
+      text-align: center;
+    }
+
+    tr,
+    td {
+      border: 1px solid black;
+      padding: 15px;
+      margin: 0 auto;
+    }
+
+    tr:nth-child(odd) {
+      background-color: lightblue;
+    }
+
+    tr:nth-child(even) {
+      background-color: rgb(253, 213, 220);
+    }
+    #conlonbietnhay{
+      position: relative;
+      left: 500px;
+      width: 300px;
+      height: 300px;
+      top: 300px
+    }
+  </style>
+  <body>
+    <div id="conlonbietnhay">
+    <iframe src="https://giphy.com/embed/fxTDiduVAhCgnNLaG2" width="500" height="500" frameBorder="0"
+        class="giphy-embed" allowFullScreen></iframe>
+    <p><a href="https://giphy.com/gifs/pig-jelly-gonryon-fxTDiduVAhCgnNLaG2"></a></p></div>
+    <h2>Quản lý sinh viên</h2>
+    <div class="container">
+      <label>Ảnh sinh viên</label> <br /><br />
+      <input type="file" name="" id="imgStudent" /><br /><br />
+      <label for="">Tên</label> <br /><br />
+      <input type="text" name="" id="nameStudent" /><br /><br />
+      <label for="">MSV</label> <br /><br />
+      <input type="text" name="" id="msvStudent" /><br /><br />
+      <label for="">GIỚI TÍNH</label> <br /><br />
+      <input type="text" name="" id="genderStudent" /><br /><br />
+      <label for="">QUÊ QUÁN</label> <br /><br />
+      <input type="text" name="" id="countryStudent" /><br /><br />
+      <button onclick="addButton()">Add</button><br /><br />
+      <label for="">Tìm kiếm</label> <br />
+      <input type="text" name="" id="searchStudent" />
+      <button onclick="searchButton()">Search</button>
+    </div>
+    <h3>Thông tin sinh viên</h3>
+    <table id="tableStudent">
+      <!-- <tr>
+            <td>ID</td>
+            <td>Ảnh</td>
+            <td>TÊN</td>
+            <td>MSV</td>
+            <td>GIỚI TÍNH</td>
+            <td>QUÊ QUÁN</td>
+            <td><button onclick="deleteButton()"></button></td>
+            <td><button onclick="editButton()"></button></td>
+        </tr> -->
+    </table>
+    <h3>Tìm kiếm thông tin</h3>
+    <table id="tableSearch"></table>
+    <script>
+      let listStudent = JSON.parse(localStorage.getItem("listStudent"));
+      function addButton() {
+        let nameInput = document.getElementById("nameStudent").value;
+        let msvInput = document.getElementById("msvStudent").value;
+        let genderInput = document.getElementById("genderStudent").value;
+        let countryInput = document.getElementById("countryStudent").value;
+        let imgInput = document.getElementById("imgStudent");
+        let infoStudent = {
+          ID: 1,
+          anhSV: imgInput,
+          tenSv: nameInput,
+          maSv: msvInput,
+          gioitinh: genderInput,
+          quequan: countryInput,
+        };
+        if (listStudent == null) {
+          listStudent = [];
+          listStudent.push(infoStudent);
+          localStorage.setItem("listStudent", JSON.stringify(listStudent));
+        } else {
+          listStudent.push(infoStudent);
+          localStorage.setItem("listStudent", JSON.stringify(listStudent));
+        }
+        renderList();
+      }
+      function renderList() {
+        let result = `
+            <tr>
+                <td>ID</td>
+                <td>Ảnh</td>
+                <td>TÊN</td>
+                <td>MSV</td>
+                <td>GIỚI TÍNH</td>
+                <td>QUÊ QUÁN</td>
+            </tr>
+            `;
+        for (let i = 0; i < listStudent.length; i++) {
+          result += `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td><img src="${listStudent[i].anhSV}"></td>
+                    <td>${listStudent[i].tenSv}</td>
+                    <td>${listStudent[i].maSv}</td>
+                    <td>${listStudent[i].gioitinh}</td>
+                    <td>${listStudent[i].quequan}</td>
+                    <td><button onclick="editButton(${i})">Edit</button></td>
+                    <td><button onclick="deleteButton(${i})">Delete</button></td>
+                </tr>
+                `;
+        }
+        document.getElementById("tableStudent").innerHTML = result;
+      }
+
+      function deleteButton(index) {
+        listStudent.splice(index, 1);
+        localStorage.setItem("listStudent", JSON.stringify(listStudent));
+        renderList();
+      }
+
+      function editButton(index) {
+        let student = listStudent[index];
+        let nameInput = prompt("Nhap ten moi: ");
+        let msvInput = prompt("Nhap msv moi: ");
+        let genderInput = prompt("Nhap gioi tinh moi: ");
+        let countryInput = prompt("Nhap que quan moi: ");
+        // Kiểm tra xem người dùng đã nhập thông tin mới hay chưa
+        if (nameInput || msvInput || genderInput || countryInput) {
+          listStudent[index] = {
+            ...student,
+            tenSv: nameInput || student.tenSv,
+            maSv: msvInput || student.maSv,
+            gioitinh: genderInput || student.gioitinh,
+            quequan: countryInput || student.quequan,
+          };
+          localStorage.setItem("listStudent", JSON.stringify(listStudent));
+          renderList();
+        }
+      }
+      function searchButton() {
+        let searchValue = document.getElementById("searchStudent").value;
+        let total = "";
+        for (let i = 0; i < listStudent.length; i++) {
+          if (
+            listStudent[i].tenSv.toLowerCase().includes(searchValue.toLowerCase())
+          ){
+            total += `
+                <tr>
+                  <td>${i + 1}</td>
+                  <td><img src="${listStudent[i].anhSV}"></td>
+                  <td>${listStudent[i].tenSv}</td>
+                  <td>${listStudent[i].maSv}</td>
+                  <td>${listStudent[i].gioitinh}</td>
+                  <td>${listStudent[i].quequan}</td>
+                  <td><button onclick="editButton(${i})">Edit</button></td>
+                  <td><button onclick="deleteButton(${i})">Delete</button></td>
+                </tr>
+                    `;
+          }
+        }
+        if (total.length == "") {
+          document.getElementById("tableSearch").innerHTML =
+            "khong co hoc sinh";
+        } else {
+          document.getElementById("tableSearch").innerHTML = total;
+        }
+      }
+      renderList();
+    </script>
+  </body>
+</html>
